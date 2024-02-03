@@ -1,0 +1,18 @@
+{
+    "deploy_dir": "/srv",
+    "update_interval": 3600,
+    "public_signing_key_file": "/updater/minisign.pub",
+    "unsafe_skip_signature_verification": false,
+    "targets": [
+        {
+            "name": "site",
+            "owner": "cryptodog",
+            "repo": "site"
+        },
+        {
+            "name": "cryptodog",
+            "owner": "cryptodog",
+            "repo": "cryptodog"
+        }
+    ]
+}

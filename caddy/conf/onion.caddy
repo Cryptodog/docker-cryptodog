@@ -1,0 +1,16 @@
+header {
+	Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; connect-src http://{http.request.hostport}/ ws://{http.request.hostport}/;"
+	X-Content-Type-Options nosniff
+	X-Frame-Options DENY
+}
+
+@blocked {
+	path /.git*
+}
+respond @blocked 403
+
+root * /srv/cryptodog
+file_server
+encode gzip
+reverse_proxy /websocket updog:8111
+log

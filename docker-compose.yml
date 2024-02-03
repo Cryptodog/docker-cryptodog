@@ -1,0 +1,98 @@
+version: '3'
+services:
+  caddy:
+    build: caddy
+    environment:
+      - DEPLOY_ENV=${DEPLOY_ENV}
+      - HOST_DEV=${HOST_DEV}
+      - HOST_PROD=${HOST_PROD}
+      - ONION_HOST_PROD=${ONION_HOST_PROD}
+      - ONION_HOST_DEV=${ONION_HOST_DEV}
+    ports:
+      # dev
+      # TODO: don't expose this in prod
+      - "8080:8080"
+      # prod
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_srv:/srv:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "100"
+
+  updog:
+    build: updog
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "100"
+
+  ejabberd:
+    build:
+      context: debian-ejabberd
+      args:
+        EJABBERD_HOSTNAME: ${EJABBERD_HOSTNAME}
+    tmpfs:
+      - /run/ejabberd
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "100"
+
+  onion-service:
+    build:
+      context: onion-service
+      args:
+        DEPLOY_ENV: ${DEPLOY_ENV}
+    volumes:
+      - tor_data:/var/lib/tor
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "100"
+
+  updater:
+    build: updater
+    depends_on:
+      # need caddy to start first; otherwise, setting perms on /srv is unreliable
+      - caddy
+    environment:
+      - GITHUB_API_TOKEN=${GITHUB_API_TOKEN}
+    volumes:
+      - caddy_srv:/srv
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "100"
+
+volumes:
+  caddy_srv:
+  caddy_data:
+    external: true
+  caddy_config:
+  tor_data:
+    external: true

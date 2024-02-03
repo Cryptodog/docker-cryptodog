@@ -1,0 +1,38 @@
+http://{$HOST_DEV}:8080 {
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		Content-Security-Policy "default-src 'self';"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+	}
+
+	@blocked {
+		path /.git*
+	}
+
+	handle /websocket {
+		reverse_proxy /websocket updog:8111
+	}
+
+	redir /cryptodog /cryptodog/
+	handle_path /cryptodog/* {
+		root * /srv/cryptodog
+		respond @blocked 403
+		file_server
+		header {
+			Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; connect-src https://crypto.dog/ wss://crypto.dog/ https://{$HOST_DEV}:*/ wss://{$HOST_DEV}:*/;"
+		}
+	}
+
+	handle * {
+		root * /srv/site
+		respond @blocked 403
+		file_server
+	}
+	encode gzip
+	log
+}
+
+http://{$ONION_HOST_DEV}:8080 {
+	import onion.caddy
+}

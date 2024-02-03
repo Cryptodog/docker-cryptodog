@@ -1,0 +1,24 @@
+{$HOST_PROD} {
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		Content-Security-Policy "default-src 'self';"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+	}
+
+	@blocked {
+		path /.git*
+	}
+	respond @blocked 403
+
+	root * /srv/site
+	file_server
+	encode gzip
+	tls contact@crypto.dog
+	reverse_proxy /websocket updog:8111
+	log
+}
+
+http://{$ONION_HOST_PROD}:8080 {
+	import onion.caddy
+}
