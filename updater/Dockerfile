@@ -5,8 +5,8 @@ WORKDIR /updater
 
 ARG VERSION=0.0.4
 RUN apk add minisign && \
-    wget "https://github.com/ayyghost/updater/releases/download/v${VERSION}/updater-${VERSION}.tar.gz" && \
-    wget "https://github.com/ayyghost/updater/releases/download/v${VERSION}/updater-${VERSION}.tar.gz.minisig" && \
+    wget "https://github.com/Cryptodog/updater/releases/download/v${VERSION}/updater-${VERSION}.tar.gz" && \
+    wget "https://github.com/Cryptodog/updater/releases/download/v${VERSION}/updater-${VERSION}.tar.gz.minisig" && \
     minisign -Vm "updater-${VERSION}.tar.gz" && \
     tar --strip 1 -xzf "updater-${VERSION}.tar.gz" && \
     rm "updater-${VERSION}.tar.gz"
