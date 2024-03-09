@@ -12,5 +12,10 @@ respond @blocked 403
 root * /srv/cryptodog
 file_server
 encode gzip
-reverse_proxy /websocket updog:8111
+reverse_proxy /websocket updog:8111 {
+	# make this request look like it's coming from 127.0.0.1
+	# updog excludes 127.0.0.1 from IP-based rate limiting so onion users can't interfere with each other
+	# two entries because updog expects two proxies in dev. in prod, only the second one will be used
+	header_up X-Forwarded-For "127.0.0.1, 127.0.0.1"
+}
 log
