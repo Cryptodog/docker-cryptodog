@@ -1,7 +1,7 @@
 FROM golang:alpine3.19
 
 # Grabbing potentially untrustworthy code here
-RUN mkdir /app && wget -O - https://github.com/Cryptodog/updog/archive/deploy.tar.gz | tar -C /app --strip 1 -xzf -
+RUN mkdir /app && wget -O - https://github.com/Cryptodog/updog/archive/refs/tags/v0.0.1.tar.gz | tar -C /app --strip 1 -xzf -
 
 WORKDIR /app
 COPY conf/config.json /app
