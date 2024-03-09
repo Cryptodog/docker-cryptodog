@@ -10,8 +10,7 @@ services:
       - ONION_HOST_DEV=${ONION_HOST_DEV}
     ports:
       # dev
-      # TODO: don't expose this in prod
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
       # prod
       - "80:80"
       - "443:443"
@@ -27,9 +26,14 @@ services:
       options:
         max-size: "20m"
         max-file: "100"
+    networks:
+      - cryptodog
 
   updog:
-    build: updog
+    build:
+      context: updog
+      args:
+        DEPLOY_ENV: ${DEPLOY_ENV}
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
@@ -38,6 +42,8 @@ services:
       options:
         max-size: "20m"
         max-file: "100"
+    networks:
+      - cryptodog
 
   ejabberd:
     build:
@@ -54,6 +60,8 @@ services:
       options:
         max-size: "20m"
         max-file: "100"
+    networks:
+      - cryptodog
 
   onion-service:
     build:
@@ -70,6 +78,8 @@ services:
       options:
         max-size: "20m"
         max-file: "100"
+    networks:
+      - cryptodog
 
   updater:
     build: updater
@@ -88,6 +98,8 @@ services:
       options:
         max-size: "20m"
         max-file: "100"
+    networks:
+      - cryptodog
 
 volumes:
   caddy_srv:
@@ -96,3 +108,11 @@ volumes:
   caddy_config:
   tor_data:
     external: true
+
+networks:
+  cryptodog:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.27.0/16
+          gateway: 192.168.27.1

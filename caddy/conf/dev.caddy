@@ -11,7 +11,11 @@ http://{$HOST_DEV}:8080 {
 	}
 
 	handle /websocket {
-		reverse_proxy /websocket updog:8111
+		reverse_proxy /websocket updog:8111 {
+			# trust docker gateway as a proxy so that caddy sees tailscale funnel's x-forwarded-for 
+			# see network config in docker-compose.yml
+			trusted_proxies 192.168.27.1/32
+		}
 	}
 
 	redir /cryptodog /cryptodog/
@@ -33,6 +37,7 @@ http://{$HOST_DEV}:8080 {
 	log
 }
 
-http://{$ONION_HOST_DEV}:8080 {
+# onion service on an unexposed port to prevent clearnet access
+http://{$ONION_HOST_DEV}:8081 {
 	import onion.caddy
 }
