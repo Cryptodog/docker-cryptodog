@@ -4,8 +4,11 @@ FROM golang:alpine3.19
 RUN mkdir /app && wget -O - https://github.com/Cryptodog/updog/archive/deploy.tar.gz | tar -C /app --strip 1 -xzf -
 
 WORKDIR /app
-RUN go mod init github.com/Cryptodog/updog && go mod tidy && go build
 COPY conf/config.json /app
+COPY build.sh /app
+ARG DEPLOY_ENV
+
+RUN chmod +x /app/build.sh && /app/build.sh ${DEPLOY_ENV}
 
 RUN addgroup -S updog && adduser -S updog -G updog
 USER updog
