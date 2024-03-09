@@ -1,11 +1,13 @@
 {
     "listen_address": ":8111",
-    "websocket_endpoint": "/",
     "upstream_websocket_url": "ws://ejabberd:5280/websocket",
     "use_x_forwarded_for": true,
+    "num_proxies": 2,
     "max_throttled_connections_per_ip": 3,
+    "max_throttled_connections_exclude_cidrs": ["127.0.0.1/32"],
     "max_message_size": 250000,
     "rate_limit": 250000,
     "rate_measure_period": 5,
-    "ping_period": 30
+    "ping_period": 30,
+    "log_websocket_messages": false
 }
