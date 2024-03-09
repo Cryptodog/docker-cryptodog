@@ -19,6 +19,7 @@
 	log
 }
 
-http://{$ONION_HOST_PROD}:8080 {
+# onion service on an unexposed port to prevent clearnet access
+http://{$ONION_HOST_PROD}:8081 {
 	import onion.caddy
 }
